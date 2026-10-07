@@ -18,17 +18,19 @@ Try the application live in your browser:
 
 ## ✨ Features
 
-- **Standard Banking Calculation:** Computes RD maturity with standard **quarterly compounding**, with options to switch to monthly, half-yearly, annually, or simple interest.
+- **Standard & Target Goal Modes:**
+  - **Standard RD:** Enter monthly deposit ➔ calculates expected maturity amount.
+  - **Target Goal RD (Reverse RD):** Enter target goal (e.g. ₹1,00,000) ➔ calculates exact required monthly deposit.
+- **Senior Citizen Booster (+0.50%):** Toggle for individuals aged 60+ to automatically apply preferential interest rates and display extra wealth gained.
+- **Real Indian Bank Presets:** 1-Click rates for **Post Office (7.10%)**, **SBI (6.80%)**, **HDFC (7.00%)**, **ICICI (7.00%)**, and **PNB (6.85%)**.
+- **Premature Break / Pre-Closure Penalty Calculator:** Real-world banking calculation estimating in-hand payout, 1% interest penalty deduction, and financial loss if RD is closed before maturity.
+- **Standard Quarterly Compounding:** Adheres strictly to RBI & Post Office norms (with options for monthly, half-yearly, annually, and simple interest).
 - **Dual Controls:** Synchronized range sliders and number inputs for smooth adjustments.
-- **Quick Preset Chips:** One-tap selection for popular monthly deposits (₹2K, ₹5K, ₹10K, ₹25K) and interest rates (6.5%, 7.0%, 7.1% Post Office, 7.5% Sr. Citizen).
-- **Flexible Tenure:** Switch between **Years** (1–10 yrs) and **Months** (3–120 mos).
 - **Dynamic Donut Chart:** Zero-dependency SVG donut chart visualizing the ratio of Invested Amount vs. Wealth Gained.
-- **Growth Schedule:** Detailed year-by-year or month-by-month investment breakdown table.
+- **Growth Schedule & CSV Export:** Year-by-year or month-by-month table with 1-click **Download CSV** support.
 - **Dark & Light Mode:** Seamless theme switcher with memory retention (`localStorage`).
-- **Export & Share:**
-  - One-click **Copy Summary** formatted for messaging apps.
-  - **Print / Save as PDF** with optimized print stylesheets.
-- **Mobile First & Responsive:** Works flawlessly across desktops, tablets, and smartphones.
+- **Export & Share:** Print / Save as PDF and one-click Copy Summary.
+- **Mobile First & Responsive:** Works flawlessly across all devices.
 
 ---
 

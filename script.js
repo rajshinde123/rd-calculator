@@ -1,5 +1,5 @@
 /**
- * Recurring Deposit (RD) Calculator
+ * Recurring Deposit (RD) Calculator - Advanced Real-World Features
  * Author: rajshinde123
  * Standard Quarterly Compounding (Indian Banking / Post Office standard)
  */
@@ -7,11 +7,25 @@
 (function () {
     'use strict';
 
-    // DOM Elements - Inputs
-    const monthlyDepositInput = document.getElementById('monthlyDepositInput');
-    const monthlyDepositSlider = document.getElementById('monthlyDepositSlider');
+    // DOM Elements - Calculation Mode
+    const modeStandardBtn = document.getElementById('modeStandard');
+    const modeGoalBtn = document.getElementById('modeGoal');
+    const amountLabel = document.getElementById('amountLabel');
+    const amountInput = document.getElementById('amountInput');
+    const amountSlider = document.getElementById('amountSlider');
+    const amountTicks = document.getElementById('amountTicks');
+    const amountChipsContainer = document.getElementById('amountChips');
+
+    // DOM Elements - Interest & Senior Citizen & Banks
     const interestRateInput = document.getElementById('interestRateInput');
     const interestRateSlider = document.getElementById('interestRateSlider');
+    const seniorCitizenToggle = document.getElementById('seniorCitizenToggle');
+    const srBadge = document.getElementById('srBadge');
+    const seniorBenefitBadge = document.getElementById('seniorBenefitBadge');
+    const srGainValue = document.getElementById('srGainValue');
+    const bankChips = document.querySelectorAll('.bank-chip');
+
+    // DOM Elements - Tenure
     const tenureInput = document.getElementById('tenureInput');
     const tenureSlider = document.getElementById('tenureSlider');
     const tenureUnitLabel = document.getElementById('tenureUnitLabel');
@@ -23,7 +37,9 @@
     const resetBtn = document.getElementById('resetBtn');
 
     // DOM Elements - Results
-    const maturityAmountEl = document.getElementById('maturityAmount');
+    const highlightCard = document.getElementById('highlightCard');
+    const highlightLabel = document.getElementById('highlightLabel');
+    const highlightMainValue = document.getElementById('highlightMainValue');
     const maturityDateEl = document.getElementById('maturityDate');
     const returnPercentageEl = document.getElementById('returnPercentage');
     const totalInvestedEl = document.getElementById('totalInvested');
@@ -31,17 +47,33 @@
     const totalInterestEl = document.getElementById('totalInterest');
     const interestPctEl = document.getElementById('interestPct');
     const chartTenureEl = document.getElementById('chartTenure');
+    const legendInvestedText = document.getElementById('legendInvestedText');
+    const statInvestedLabel = document.getElementById('statInvestedLabel');
 
     // DOM Elements - Donut Chart
     const donutInvested = document.getElementById('donutInvested');
     const donutInterest = document.getElementById('donutInterest');
     const CIRCUMFERENCE = 2 * Math.PI * 75; // r = 75
 
+    // DOM Elements - Premature Closure
+    const prematureToggle = document.getElementById('prematureToggle');
+    const prematureBody = document.getElementById('prematureBody');
+    const prematureSlider = document.getElementById('prematureSlider');
+    const prematureMonthsText = document.getElementById('prematureMonthsText');
+    const prematureMidTick = document.getElementById('prematureMidTick');
+    const prematureMaxTick = document.getElementById('prematureMaxTick');
+    const pDeposited = document.getElementById('pDeposited');
+    const pRateApplied = document.getElementById('pRateApplied');
+    const pInterest = document.getElementById('pInterest');
+    const pPayout = document.getElementById('pPayout');
+    const pLossTag = document.getElementById('pLossTag');
+
     // DOM Elements - Schedule Table
     const viewYearlyBtn = document.getElementById('viewYearly');
     const viewMonthlyBtn = document.getElementById('viewMonthly');
     const thPeriod = document.getElementById('thPeriod');
     const scheduleTableBody = document.getElementById('scheduleTableBody');
+    const downloadCsvBtn = document.getElementById('downloadCsvBtn');
 
     // DOM Elements - Actions & Theme
     const themeToggle = document.getElementById('themeToggle');
@@ -51,25 +83,23 @@
     const copySummaryBtn = document.getElementById('copySummaryBtn');
     const toast = document.getElementById('toast');
 
-    // State
-    let tenureUnit = 'years'; // 'years' or 'months'
-    let scheduleView = 'yearly'; // 'yearly' or 'monthly'
+    // State Variables
+    let currentMode = 'standard'; // 'standard' or 'goal'
+    let tenureUnit = 'years';      // 'years' or 'months'
+    let scheduleView = 'yearly';   // 'yearly' or 'monthly'
+    let activeBank = 'postoffice'; // 'postoffice', 'sbi', etc.
+    let baseRateWithoutSr = 7.10;
+    let latestCalculation = null;
 
-    // Currency Formatter (Indian Rupee)
+    // Currency Formatters
     const inrFormatter = new Intl.NumberFormat('en-IN', {
         style: 'currency',
         currency: 'INR',
         maximumFractionDigits: 0
     });
 
-    const inrFormatterDecimal = new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 2
-    });
-
     /**
-     * Initialize Theme
+     * Theme Handler
      */
     function initTheme() {
         const savedTheme = localStorage.getItem('rd_theme');
@@ -96,20 +126,20 @@
     });
 
     /**
-     * Slider Track Fill Gradient Sync
+     * Slider Track Fill Sync
      */
     function updateSliderFill(slider) {
         const min = parseFloat(slider.min) || 0;
         const max = parseFloat(slider.max) || 100;
         const val = parseFloat(slider.value) || 0;
-        const percentage = ((val - min) / (max - min)) * 100;
+        const percentage = Math.max(0, Math.min(100, ((val - min) / (max - min)) * 100));
         slider.style.background = `linear-gradient(to right, var(--primary) 0%, var(--primary) ${percentage}%, var(--bg-card-subtle) ${percentage}%, var(--bg-card-subtle) 100%)`;
     }
 
     /**
      * Sync Inputs & Sliders
      */
-    function syncInputs(inputEl, sliderEl) {
+    function setupSync(inputEl, sliderEl) {
         sliderEl.addEventListener('input', () => {
             inputEl.value = sliderEl.value;
             updateSliderFill(sliderEl);
@@ -126,42 +156,168 @@
         });
     }
 
-    syncInputs(monthlyDepositInput, monthlyDepositSlider);
-    syncInputs(interestRateInput, interestRateSlider);
-    syncInputs(tenureInput, tenureSlider);
+    setupSync(amountInput, amountSlider);
+    setupSync(interestRateInput, interestRateSlider);
+    setupSync(tenureInput, tenureSlider);
 
     /**
-     * Quick Preset Chips
+     * Calculation Mode Switcher (Standard RD vs Target Goal RD)
      */
-    document.querySelectorAll('[data-deposit]').forEach(chip => {
-        chip.addEventListener('click', () => {
-            document.querySelectorAll('[data-deposit]').forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-            monthlyDepositInput.value = chip.dataset.deposit;
-            monthlyDepositSlider.value = chip.dataset.deposit;
-            updateSliderFill(monthlyDepositSlider);
-            calculateAndRender();
-        });
-    });
+    function setCalculationMode(mode) {
+        if (currentMode === mode) return;
+        currentMode = mode;
 
-    document.querySelectorAll('[data-rate]').forEach(chip => {
-        chip.addEventListener('click', () => {
-            document.querySelectorAll('[data-rate]').forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-            interestRateInput.value = chip.dataset.rate;
-            interestRateSlider.value = chip.dataset.rate;
-            updateSliderFill(interestRateSlider);
-            calculateAndRender();
+        if (mode === 'standard') {
+            modeStandardBtn.classList.add('active');
+            modeGoalBtn.classList.remove('active');
+            amountLabel.textContent = 'Monthly Deposit';
+
+            amountInput.min = 500;
+            amountInput.max = 1000000;
+            amountInput.step = 500;
+            amountInput.value = 5000;
+
+            amountSlider.min = 500;
+            amountSlider.max = 100000;
+            amountSlider.step = 500;
+            amountSlider.value = 5000;
+
+            amountTicks.innerHTML = `
+                <span>₹500</span>
+                <span>₹25,000</span>
+                <span>₹50,000</span>
+                <span>₹1,00,000</span>
+            `;
+
+            amountChipsContainer.innerHTML = `
+                <button type="button" class="chip" data-amount="2000">₹2,000</button>
+                <button type="button" class="chip active" data-amount="5000">₹5,000</button>
+                <button type="button" class="chip" data-amount="10000">₹10,000</button>
+                <button type="button" class="chip" data-amount="25000">₹25,000</button>
+            `;
+
+            highlightLabel.textContent = 'Expected Maturity Amount';
+            statInvestedLabel.textContent = 'Total Investment';
+            legendInvestedText.textContent = 'Invested Amount';
+        } else {
+            modeGoalBtn.classList.add('active');
+            modeStandardBtn.classList.remove('active');
+            amountLabel.textContent = 'Target Maturity Goal';
+
+            amountInput.min = 10000;
+            amountInput.max = 5000000;
+            amountInput.step = 5000;
+            amountInput.value = 100000;
+
+            amountSlider.min = 10000;
+            amountSlider.max = 1000000;
+            amountSlider.step = 5000;
+            amountSlider.value = 100000;
+
+            amountTicks.innerHTML = `
+                <span>₹10,000</span>
+                <span>₹2,50,000</span>
+                <span>₹5,00,000</span>
+                <span>₹10,00,000</span>
+            `;
+
+            amountChipsContainer.innerHTML = `
+                <button type="button" class="chip" data-amount="50000">₹50,000</button>
+                <button type="button" class="chip active" data-amount="100000">₹1,00,000</button>
+                <button type="button" class="chip" data-amount="200000">₹2,00,000</button>
+                <button type="button" class="chip" data-amount="500000">₹5,00,000</button>
+            `;
+
+            highlightLabel.textContent = 'Required Monthly Deposit';
+            statInvestedLabel.textContent = 'Total You Will Deposit';
+            legendInvestedText.textContent = 'Monthly Installments';
+        }
+
+        attachAmountChipListeners();
+        updateSliderFill(amountSlider);
+        calculateAndRender();
+    }
+
+    function attachAmountChipListeners() {
+        amountChipsContainer.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                amountChipsContainer.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                amountInput.value = chip.dataset.amount;
+                amountSlider.value = chip.dataset.amount;
+                updateSliderFill(amountSlider);
+                calculateAndRender();
+            });
         });
+    }
+
+    modeStandardBtn.addEventListener('click', () => setCalculationMode('standard'));
+    modeGoalBtn.addEventListener('click', () => setCalculationMode('goal'));
+    attachAmountChipListeners();
+
+    /**
+     * Senior Citizen Toggle
+     */
+    seniorCitizenToggle.addEventListener('change', () => {
+        applyBankOrRate();
     });
 
     /**
-     * Switch Tenure Unit (Years vs Months)
+     * Bank Presets
+     */
+    bankChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            bankChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            activeBank = chip.dataset.bank;
+            applyBankOrRate();
+        });
+    });
+
+    function applyBankOrRate() {
+        const isSr = seniorCitizenToggle.checked;
+        const activeChip = document.querySelector(`.bank-chip[data-bank="${activeBank}"]`);
+
+        if (activeChip) {
+            const standardRate = parseFloat(activeChip.dataset.rate);
+            const srRate = parseFloat(activeChip.dataset.srRate);
+            const selectedRate = isSr ? srRate : standardRate;
+
+            interestRateInput.value = selectedRate.toFixed(2);
+            interestRateSlider.value = selectedRate;
+            baseRateWithoutSr = standardRate;
+        } else {
+            // Custom rate
+            let currentVal = parseFloat(interestRateInput.value) || 7.0;
+            if (isSr) {
+                currentVal += 0.50;
+            } else {
+                currentVal = Math.max(1, currentVal - 0.50);
+            }
+            interestRateInput.value = currentVal.toFixed(2);
+            interestRateSlider.value = currentVal;
+        }
+
+        updateSliderFill(interestRateSlider);
+        calculateAndRender();
+    }
+
+    // Unselect bank chip on manual slider/input change
+    interestRateSlider.addEventListener('change', () => {
+        bankChips.forEach(c => c.classList.remove('active'));
+        activeBank = 'custom';
+    });
+    interestRateInput.addEventListener('change', () => {
+        bankChips.forEach(c => c.classList.remove('active'));
+        activeBank = 'custom';
+    });
+
+    /**
+     * Tenure Switcher
      */
     function setTenureUnit(unit) {
         if (tenureUnit === unit) return;
         tenureUnit = unit;
-
         let currentVal = parseFloat(tenureInput.value) || 1;
 
         if (unit === 'years') {
@@ -174,7 +330,6 @@
             tenureSlider.min = 1;
             tenureSlider.max = 10;
 
-            // Convert months to years (default to nearest)
             let years = Math.max(1, Math.min(10, Math.round(currentVal / 12) || 5));
             tenureInput.value = years;
             tenureSlider.value = years;
@@ -202,7 +357,6 @@
             tenureSlider.min = 3;
             tenureSlider.max = 120;
 
-            // Convert years to months
             let months = Math.max(3, Math.min(120, Math.round(currentVal * 12) || 60));
             tenureInput.value = months;
             tenureSlider.value = months;
@@ -243,25 +397,21 @@
     unitYearsBtn.addEventListener('click', () => setTenureUnit('years'));
     unitMonthsBtn.addEventListener('click', () => setTenureUnit('months'));
     attachTenureChipListeners();
-
     compoundingSelect.addEventListener('change', calculateAndRender);
 
     /**
-     * RD Calculation Engine
-     * Standard Banking formula with configurable compounding frequency
+     * Core Math Engine
      */
     function computeRD(P, annualRate, totalMonths, frequency) {
         let totalInvested = P * totalMonths;
         let maturityAmount = 0;
 
         if (frequency === 'simple') {
-            // Simple Interest formula for each installment: P * (1 + r * (n - i + 1) / 12)
             for (let i = 1; i <= totalMonths; i++) {
                 let monthsRemaining = totalMonths - i + 1;
                 maturityAmount += P * (1 + (annualRate / 100) * (monthsRemaining / 12));
             }
         } else {
-            // Compound Interest formula: P * (1 + r / (100 * n))^(n * t)
             const n = parseFloat(frequency) || 4; // Quarterly = 4
             for (let i = 1; i <= totalMonths; i++) {
                 let monthsRemaining = totalMonths - i + 1;
@@ -279,7 +429,38 @@
     }
 
     /**
-     * Compute progressive balance month by month
+     * Reverse RD Calculation (Target Goal)
+     */
+    function computeReverseRD(targetMaturity, annualRate, totalMonths, frequency) {
+        let compoundingFactorSum = 0;
+        if (frequency === 'simple') {
+            for (let i = 1; i <= totalMonths; i++) {
+                let monthsRemaining = totalMonths - i + 1;
+                compoundingFactorSum += (1 + (annualRate / 100) * (monthsRemaining / 12));
+            }
+        } else {
+            const n = parseFloat(frequency) || 4;
+            for (let i = 1; i <= totalMonths; i++) {
+                let monthsRemaining = totalMonths - i + 1;
+                let periods = (monthsRemaining / 12) * n;
+                compoundingFactorSum += Math.pow(1 + (annualRate / (100 * n)), periods);
+            }
+        }
+
+        // Required monthly installment P
+        let P = Math.ceil(targetMaturity / compoundingFactorSum);
+        let normalCalc = computeRD(P, annualRate, totalMonths, frequency);
+
+        return {
+            requiredMonthly: P,
+            totalInvested: normalCalc.totalInvested,
+            totalInterest: normalCalc.totalInterest,
+            maturityAmount: normalCalc.maturityAmount
+        };
+    }
+
+    /**
+     * Schedule Computation
      */
     function computeMonthlySchedule(P, annualRate, totalMonths, frequency) {
         let schedule = [];
@@ -287,7 +468,6 @@
 
         for (let m = 1; m <= totalMonths; m++) {
             runningInvested += P;
-            // What is the maturity value if we stop and calculate for month m:
             let resultAtM = computeRD(P, annualRate, m, frequency);
             schedule.push({
                 period: m,
@@ -301,48 +481,85 @@
     }
 
     /**
-     * Main Calculation & Render Function
+     * Main Calculation & Render
      */
     function calculateAndRender() {
-        const P = Math.max(100, parseFloat(monthlyDepositInput.value) || 0);
+        const rawAmount = Math.max(100, parseFloat(amountInput.value) || 0);
         const rate = Math.max(0.1, parseFloat(interestRateInput.value) || 0);
         const tenureRaw = Math.max(1, parseFloat(tenureInput.value) || 1);
         const totalMonths = tenureUnit === 'years' ? Math.round(tenureRaw * 12) : Math.round(tenureRaw);
         const frequency = compoundingSelect.value;
+        const isSr = seniorCitizenToggle.checked;
 
-        // Perform calculation
-        const result = computeRD(P, rate, totalMonths, frequency);
+        let monthlyP = 0;
+        let result = null;
 
-        // Render Summary Numbers
-        maturityAmountEl.textContent = inrFormatter.format(result.maturityAmount);
+        if (currentMode === 'standard') {
+            monthlyP = rawAmount;
+            result = computeRD(monthlyP, rate, totalMonths, frequency);
+            highlightMainValue.textContent = inrFormatter.format(result.maturityAmount);
+        } else {
+            // Target Goal Mode
+            const targetGoal = rawAmount;
+            const goalResult = computeReverseRD(targetGoal, rate, totalMonths, frequency);
+            monthlyP = goalResult.requiredMonthly;
+            result = goalResult;
+            highlightMainValue.textContent = inrFormatter.format(goalResult.requiredMonthly) + ' / mo';
+        }
+
+        latestCalculation = {
+            monthlyP,
+            rate,
+            totalMonths,
+            frequency,
+            result
+        };
+
+        // Render Stats
         totalInvestedEl.textContent = inrFormatter.format(result.totalInvested);
         totalInterestEl.textContent = inrFormatter.format(result.totalInterest);
 
-        // Percentages
         const investedPct = result.maturityAmount > 0 ? ((result.totalInvested / result.maturityAmount) * 100).toFixed(1) : 0;
         const interestPct = result.maturityAmount > 0 ? ((result.totalInterest / result.maturityAmount) * 100).toFixed(1) : 0;
         const returnPct = result.totalInvested > 0 ? ((result.totalInterest / result.totalInvested) * 100).toFixed(1) : 0;
 
-        investedPctEl.textContent = `${investedPct}% of maturity`;
-        interestPctEl.textContent = `${interestPct}% of maturity`;
+        investedPctEl.textContent = `${investedPct}% of total`;
+        interestPctEl.textContent = `${interestPct}% of total`;
         returnPercentageEl.textContent = `Net Gain: +${returnPct}%`;
 
-        // Calculate Maturity Date
+        // Senior Citizen Gain Badge
+        if (isSr && rate > 0.5) {
+            const baseResult = computeRD(monthlyP, rate - 0.50, totalMonths, frequency);
+            const extraSrGain = Math.max(0, result.totalInterest - baseResult.totalInterest);
+            if (extraSrGain > 0) {
+                srGainValue.textContent = inrFormatter.format(extraSrGain);
+                seniorBenefitBadge.classList.remove('hidden');
+            } else {
+                seniorBenefitBadge.classList.add('hidden');
+            }
+        } else {
+            seniorBenefitBadge.classList.add('hidden');
+        }
+
+        // Maturity Date
         const now = new Date();
         const maturityDate = new Date(now.getFullYear(), now.getMonth() + totalMonths, 1);
         const options = { month: 'short', year: 'numeric' };
-        maturityDateEl.textContent = `Maturity on: ${maturityDate.toLocaleDateString('en-IN', options)}`;
+        maturityDateEl.textContent = `Maturity: ${maturityDate.toLocaleDateString('en-IN', options)}`;
 
-        // Center chart tenure text
+        // Center chart text
         chartTenureEl.textContent = tenureUnit === 'years' 
             ? `${tenureRaw} ${tenureRaw === 1 ? 'Year' : 'Years'}` 
             : `${totalMonths} Months`;
 
-        // Update Donut Chart
+        // Donut Chart
         updateDonutChart(result.totalInvested, result.totalInterest, result.maturityAmount);
 
-        // Update Schedule Table
-        renderSchedule(P, rate, totalMonths, frequency);
+        // Schedule Table
+        renderSchedule(monthlyP, rate, totalMonths, frequency);
+
+        // Premature Range Limits & Calculations
+        updatePrematureLimits(monthlyP, rate, totalMonths, frequency, result.maturityAmount);
     }
 
     /**
@@ -350,24 +567,85 @@
      */
     function updateDonutChart(invested, interest, total) {
         if (total <= 0) return;
+        const investedLength = (invested / total) * CIRCUMFERENCE;
+        const interestLength = (interest / total) * CIRCUMFERENCE;
 
-        const investedFraction = invested / total;
-        const interestFraction = interest / total;
-
-        const investedLength = investedFraction * CIRCUMFERENCE;
-        const interestLength = interestFraction * CIRCUMFERENCE;
-
-        // Invested Segment (starts at top, offset 0)
         donutInvested.style.strokeDasharray = `${investedLength} ${CIRCUMFERENCE}`;
         donutInvested.style.strokeDashoffset = '0';
 
-        // Interest Segment (starts right after invested segment)
         donutInterest.style.strokeDasharray = `${interestLength} ${CIRCUMFERENCE}`;
         donutInterest.style.strokeDashoffset = `-${investedLength}`;
     }
 
     /**
-     * Render Schedule Table (Yearly / Monthly)
+     * Premature Break Calculator
+     */
+    function updatePrematureLimits(P, rate, totalMonths, frequency, fullMaturity) {
+        if (totalMonths <= 3) {
+            prematureToggle.disabled = true;
+            return;
+        }
+        prematureToggle.disabled = false;
+
+        prematureSlider.min = 3;
+        prematureSlider.max = totalMonths - 1;
+
+        let currentPremature = parseInt(prematureSlider.value) || 12;
+        if (currentPremature >= totalMonths) {
+            currentPremature = Math.max(3, Math.floor(totalMonths / 2));
+            prematureSlider.value = currentPremature;
+        }
+
+        prematureMaxTick.textContent = `${totalMonths - 1} Mos`;
+        prematureMidTick.textContent = `${Math.floor(totalMonths / 2)} Mos`;
+        updateSliderFill(prematureSlider);
+
+        calculatePremature(P, rate, totalMonths, frequency, fullMaturity);
+    }
+
+    function calculatePremature(P, rate, totalMonths, frequency, fullMaturity) {
+        const breakMonths = parseInt(prematureSlider.value) || 12;
+        prematureMonthsText.textContent = `${breakMonths} Months`;
+
+        // Bank Rule: applicable rate for period minus 1.00% penalty
+        const penaltyRate = Math.max(0.1, rate - 1.00);
+        const preResult = computeRD(P, penaltyRate, breakMonths, frequency);
+
+        const depositedTillThen = P * breakMonths;
+        const inHandPayout = preResult.maturityAmount;
+        const lossVsFull = Math.max(0, fullMaturity - inHandPayout);
+
+        pDeposited.textContent = inrFormatter.format(depositedTillThen);
+        pRateApplied.textContent = `${penaltyRate.toFixed(2)}% (1.00% penalty deducted)`;
+        pInterest.textContent = `+${inrFormatter.format(preResult.totalInterest)}`;
+        pPayout.textContent = inrFormatter.format(inHandPayout);
+        pLossTag.textContent = `Loss vs Full Maturity: ${inrFormatter.format(lossVsFull)}`;
+    }
+
+    prematureSlider.addEventListener('input', () => {
+        updateSliderFill(prematureSlider);
+        if (latestCalculation) {
+            calculatePremature(
+                latestCalculation.monthlyP,
+                latestCalculation.rate,
+                latestCalculation.totalMonths,
+                latestCalculation.frequency,
+                latestCalculation.result.maturityAmount
+            );
+        }
+    });
+
+    prematureToggle.addEventListener('change', () => {
+        if (prematureToggle.checked) {
+            prematureBody.classList.remove('hidden');
+            updateSliderFill(prematureSlider);
+        } else {
+            prematureBody.classList.add('hidden');
+        }
+    });
+
+    /**
+     * Render Schedule Table
      */
     function renderSchedule(P, rate, totalMonths, frequency) {
         const fullMonthly = computeMonthlySchedule(P, rate, totalMonths, frequency);
@@ -409,7 +687,6 @@
         }
     }
 
-    // Schedule View Tabs
     viewYearlyBtn.addEventListener('click', () => {
         viewYearlyBtn.classList.add('active');
         viewMonthlyBtn.classList.remove('active');
@@ -425,21 +702,53 @@
     });
 
     /**
+     * Download Schedule as CSV
+     */
+    downloadCsvBtn.addEventListener('click', () => {
+        if (!latestCalculation) return;
+        const P = latestCalculation.monthlyP;
+        const rate = latestCalculation.rate;
+        const totalMonths = latestCalculation.totalMonths;
+        const frequency = latestCalculation.frequency;
+        const monthlySchedule = computeMonthlySchedule(P, rate, totalMonths, frequency);
+
+        let csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += 'Month,Monthly Deposit (INR),Total Principal Invested (INR),Cumulative Interest Earned (INR),Closing Maturity Balance (INR)\r\n';
+
+        monthlySchedule.forEach(row => {
+            csvContent += `${row.period},${row.depositThisPeriod},${row.totalInvested},${row.totalInterest},${row.closingBalance}\r\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', `RD_Schedule_${totalMonths}Months.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('CSV schedule downloaded!');
+    });
+
+    /**
      * Copy Summary to Clipboard
      */
     copySummaryBtn.addEventListener('click', () => {
-        const P = monthlyDepositInput.value;
-        const r = interestRateInput.value;
+        if (!latestCalculation) return;
+        const P = latestCalculation.monthlyP;
+        const r = latestCalculation.rate;
         const tenure = chartTenureEl.textContent;
-        const maturity = maturityAmountEl.textContent;
+        const maturity = highlightMainValue.textContent;
         const invested = totalInvestedEl.textContent;
         const interest = totalInterestEl.textContent;
         const returnPct = returnPercentageEl.textContent;
+        const isSr = seniorCitizenToggle.checked ? 'Yes (+0.50% added)' : 'No';
 
         const summaryText = `🏦 Recurring Deposit (RD) Summary:
 ------------------------------------
+• Mode: ${currentMode === 'standard' ? 'Standard RD' : 'Target Goal RD'}
 • Monthly Deposit: ₹${Number(P).toLocaleString('en-IN')}
-• Annual Interest Rate: ${r}%
+• Annual Interest Rate: ${r.toFixed(2)}%
+• Senior Citizen: ${isSr}
 • Tenure: ${tenure}
 • Compounding: ${compoundingSelect.options[compoundingSelect.selectedIndex].text}
 ------------------------------------
@@ -447,7 +756,7 @@
 • Total Interest Earned: ${interest}
 • Maturity Amount: ${maturity} (${returnPct})
 ------------------------------------
-Calculated using RD Calculator (rajshinde123)`;
+Calculated with RD Calculator by rajshinde123`;
 
         navigator.clipboard.writeText(summaryText).then(() => {
             showToast('Summary copied to clipboard!');
@@ -478,32 +787,42 @@ Calculated using RD Calculator (rajshinde123)`;
      * Reset to Defaults
      */
     resetBtn.addEventListener('click', () => {
-        monthlyDepositInput.value = 5000;
-        monthlyDepositSlider.value = 5000;
-        interestRateInput.value = 7.1;
-        interestRateSlider.value = 7.1;
+        currentMode = 'standard';
+        modeStandardBtn.classList.add('active');
+        modeGoalBtn.classList.remove('active');
+        amountLabel.textContent = 'Monthly Deposit';
+
+        amountInput.value = 5000;
+        amountSlider.value = 5000;
+        seniorCitizenToggle.checked = false;
+        activeBank = 'postoffice';
+
+        bankChips.forEach(c => {
+            if (c.dataset.bank === 'postoffice') c.classList.add('active');
+            else c.classList.remove('active');
+        });
+
+        interestRateInput.value = 7.10;
+        interestRateSlider.value = 7.10;
         compoundingSelect.value = '4';
+
         setTenureUnit('years');
         tenureInput.value = 5;
         tenureSlider.value = 5;
 
-        // Reset chips
-        document.querySelectorAll('.preset-chips .chip').forEach(c => c.classList.remove('active'));
-        const defaultDepositChip = document.querySelector('[data-deposit="5000"]');
-        if (defaultDepositChip) defaultDepositChip.classList.add('active');
-        const defaultRateChip = document.querySelector('[data-rate="7.1"]');
-        if (defaultRateChip) defaultRateChip.classList.add('active');
+        prematureToggle.checked = false;
+        prematureBody.classList.add('hidden');
 
-        updateSliderFill(monthlyDepositSlider);
+        updateSliderFill(amountSlider);
         updateSliderFill(interestRateSlider);
         updateSliderFill(tenureSlider);
         calculateAndRender();
         showToast('Reset to default values');
     });
 
-    // Initialize
+    // Initialize Application
     initTheme();
-    updateSliderFill(monthlyDepositSlider);
+    updateSliderFill(amountSlider);
     updateSliderFill(interestRateSlider);
     updateSliderFill(tenureSlider);
     calculateAndRender();

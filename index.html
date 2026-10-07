@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RD Calculator - Recurring Deposit Calculator</title>
-    <meta name="description" content="Calculate maturity value, total investment, and interest earned on your Recurring Deposit (RD) with standard quarterly compounding.">
+    <meta name="description" content="Calculate maturity value, target monthly installment, senior citizen interest, and premature withdrawal for Recurring Deposits (RD) with standard quarterly compounding.">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body data-theme="light">
@@ -27,7 +27,7 @@
                 </div>
                 <div>
                     <h1 class="brand-title">RD Calculator</h1>
-                    <p class="brand-subtitle">Recurring Deposit Maturity & Interest Calculator</p>
+                    <p class="brand-subtitle">Smart Recurring Deposit & Target Goal Calculator</p>
                 </div>
             </div>
             <div class="header-actions">
@@ -59,58 +59,106 @@
         <main class="calculator-grid">
             <!-- Left: Inputs Section -->
             <section class="card input-card">
-                <h2 class="section-title">
-                    <span>Investment Details</span>
-                    <button id="resetBtn" class="text-btn" title="Reset all inputs">Reset</button>
-                </h2>
+                <div class="input-header-row">
+                    <h2 class="section-title-inline">Investment Details</h2>
+                    <button id="resetBtn" class="text-btn" title="Reset all inputs">Reset Defaults</button>
+                </div>
 
-                <!-- Input 1: Monthly Deposit -->
-                <div class="form-group">
+                <!-- Calculator Mode Switcher: Standard vs Target Goal -->
+                <div class="mode-switcher-container">
+                    <span class="mode-label">Calculation Mode:</span>
+                    <div class="mode-toggle-group">
+                        <button type="button" class="mode-btn active" id="modeStandard">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            Standard (Monthly ➔ Maturity)
+                        </button>
+                        <button type="button" class="mode-btn" id="modeGoal">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="6"></circle>
+                                <circle cx="12" cy="12" r="2"></circle>
+                            </svg>
+                            Target Goal (Target ➔ Monthly Deposit)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Input 1: Monthly Deposit OR Target Amount -->
+                <div class="form-group" id="mainAmountGroup">
                     <div class="label-row">
-                        <label for="monthlyDepositInput">Monthly Deposit</label>
+                        <label for="amountInput" id="amountLabel">Monthly Deposit</label>
                         <div class="input-badge">
                             <span class="currency-symbol">₹</span>
-                            <input type="number" id="monthlyDepositInput" min="500" max="1000000" step="500" value="5000">
+                            <input type="number" id="amountInput" min="500" max="1000000" step="500" value="5000">
                         </div>
                     </div>
-                    <input type="range" id="monthlyDepositSlider" min="500" max="100000" step="500" value="5000" class="custom-slider">
-                    <div class="slider-ticks">
+                    <input type="range" id="amountSlider" min="500" max="100000" step="500" value="5000" class="custom-slider">
+                    <div class="slider-ticks" id="amountTicks">
                         <span>₹500</span>
                         <span>₹25,000</span>
                         <span>₹50,000</span>
                         <span>₹1,00,000</span>
                     </div>
                     <!-- Quick Preset Chips -->
-                    <div class="preset-chips">
-                        <button type="button" class="chip" data-deposit="2000">+₹2,000</button>
-                        <button type="button" class="chip active" data-deposit="5000">+₹5,000</button>
-                        <button type="button" class="chip" data-deposit="10000">+₹10,000</button>
-                        <button type="button" class="chip" data-deposit="25000">+₹25,000</button>
+                    <div class="preset-chips" id="amountChips">
+                        <button type="button" class="chip" data-amount="2000">₹2,000</button>
+                        <button type="button" class="chip active" data-amount="5000">₹5,000</button>
+                        <button type="button" class="chip" data-amount="10000">₹10,000</button>
+                        <button type="button" class="chip" data-amount="25000">₹25,000</button>
                     </div>
                 </div>
 
-                <!-- Input 2: Rate of Interest -->
+                <!-- Input 2: Rate of Interest with Senior Citizen Toggle & Bank Presets -->
                 <div class="form-group">
                     <div class="label-row">
                         <label for="interestRateInput">Interest Rate (p.a.)</label>
                         <div class="input-badge">
-                            <input type="number" id="interestRateInput" min="1" max="15" step="0.1" value="7.1">
+                            <input type="number" id="interestRateInput" min="1" max="15" step="0.05" value="7.10">
                             <span class="unit-symbol">%</span>
                         </div>
                     </div>
-                    <input type="range" id="interestRateSlider" min="1" max="15" step="0.1" value="7.1" class="custom-slider">
+
+                    <!-- Senior Citizen Switcher -->
+                    <div class="senior-citizen-bar">
+                        <label class="toggle-switch-label" for="seniorCitizenToggle">
+                            <input type="checkbox" id="seniorCitizenToggle">
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-text">Senior Citizen (60+ Yrs)</span>
+                        </label>
+                        <span class="badge-sr" id="srBadge">+0.50% Extra Rate</span>
+                    </div>
+
+                    <!-- Bank Presets (Real Indian Banks) -->
+                    <div class="bank-presets-row">
+                        <span class="bank-label">Select Bank:</span>
+                        <div class="bank-chips">
+                            <button type="button" class="bank-chip active" data-bank="postoffice" data-rate="7.10" data-sr-rate="7.10">
+                                📮 Post Office (7.10%)
+                            </button>
+                            <button type="button" class="bank-chip" data-bank="sbi" data-rate="6.80" data-sr-rate="7.30">
+                                🏛️ SBI (6.80%)
+                            </button>
+                            <button type="button" class="bank-chip" data-bank="hdfc" data-rate="7.00" data-sr-rate="7.50">
+                                🏦 HDFC (7.00%)
+                            </button>
+                            <button type="button" class="bank-chip" data-bank="icici" data-rate="7.00" data-sr-rate="7.50">
+                                🏢 ICICI (7.00%)
+                            </button>
+                            <button type="button" class="bank-chip" data-bank="pnb" data-rate="6.85" data-sr-rate="7.35">
+                                🏦 PNB (6.85%)
+                            </button>
+                        </div>
+                    </div>
+
+                    <input type="range" id="interestRateSlider" min="1" max="15" step="0.05" value="7.10" class="custom-slider">
                     <div class="slider-ticks">
                         <span>1%</span>
                         <span>5%</span>
                         <span>10%</span>
                         <span>15%</span>
-                    </div>
-                    <!-- Quick Rate Chips -->
-                    <div class="preset-chips">
-                        <button type="button" class="chip" data-rate="6.5">6.5%</button>
-                        <button type="button" class="chip" data-rate="7.0">7.0%</button>
-                        <button type="button" class="chip active" data-rate="7.1">7.1% (Post Office)</button>
-                        <button type="button" class="chip" data-rate="7.5">7.5% (Sr. Citizen)</button>
                     </div>
                 </div>
 
@@ -136,15 +184,15 @@
                     </div>
                     <!-- Quick Tenure Chips -->
                     <div class="preset-chips" id="tenureChips">
-                        <button type="button" class="chip" data-years="1">1 Year</button>
-                        <button type="button" class="chip" data-years="3">3 Years</button>
-                        <button type="button" class="chip active" data-years="5">5 Years</button>
-                        <button type="button" class="chip" data-years="10">10 Years</button>
+                        <button type="button" class="chip" data-tenure-val="1">1 Year</button>
+                        <button type="button" class="chip" data-tenure-val="3">3 Years</button>
+                        <button type="button" class="chip active" data-tenure-val="5">5 Years</button>
+                        <button type="button" class="chip" data-tenure-val="10">10 Years</button>
                     </div>
                 </div>
 
                 <!-- Input 4: Compounding Frequency -->
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 0;">
                     <div class="label-row">
                         <label for="compoundingSelect">
                             Compounding Frequency
@@ -164,13 +212,16 @@
             <!-- Right: Results & Analytics Section -->
             <section class="card results-card">
                 <!-- Highlight Card -->
-                <div class="maturity-highlight-card">
-                    <div class="highlight-label">Expected Maturity Amount</div>
-                    <div class="highlight-value" id="maturityAmount">₹0</div>
+                <div class="maturity-highlight-card" id="highlightCard">
+                    <div class="highlight-label" id="highlightLabel">Expected Maturity Amount</div>
+                    <div class="highlight-value" id="highlightMainValue">₹0</div>
                     <div class="highlight-meta">
                         <span id="maturityDate">Maturity Date: --</span>
                         <span class="dot-separator">•</span>
                         <span id="returnPercentage">Net Gain: 0%</span>
+                    </div>
+                    <div id="seniorBenefitBadge" class="sr-benefit-tag hidden">
+                        🌟 Senior Citizen extra gain: <strong id="srGainValue">₹0</strong>
                     </div>
                 </div>
 
@@ -179,7 +230,7 @@
                     <div class="stat-box">
                         <div class="stat-indicator color-invested"></div>
                         <div class="stat-content">
-                            <div class="stat-label">Total Investment</div>
+                            <div class="stat-label" id="statInvestedLabel">Total Investment</div>
                             <div class="stat-val" id="totalInvested">₹0</div>
                             <div class="stat-pct" id="investedPct">0% of total</div>
                         </div>
@@ -187,7 +238,7 @@
                     <div class="stat-box">
                         <div class="stat-indicator color-interest"></div>
                         <div class="stat-content">
-                            <div class="stat-label">Total Interest Earned</div>
+                            <div class="stat-label" id="statInterestLabel">Total Interest Earned</div>
                             <div class="stat-val" id="totalInterest">₹0</div>
                             <div class="stat-pct" id="interestPct">0% of total</div>
                         </div>
@@ -213,7 +264,7 @@
                     <div class="chart-legend">
                         <div class="legend-item">
                             <span class="legend-dot color-invested"></span>
-                            <span class="legend-text">Invested Amount</span>
+                            <span class="legend-text" id="legendInvestedText">Invested Amount</span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-dot color-interest"></span>
@@ -243,16 +294,82 @@
             </section>
         </main>
 
+        <!-- Premature Break / Closure (Emergency Exit) Card -->
+        <section class="card premature-card">
+            <div class="premature-header">
+                <div class="premature-title-group">
+                    <span class="premature-badge">Real-World Case</span>
+                    <h2 class="section-title-inline">Premature Break / Pre-closure Penalty Calculator</h2>
+                    <p class="section-desc">Agar aapko samay se pehle RD todni pade, to 1% bank penalty ke baad kitna paisa milega?</p>
+                </div>
+                <label class="toggle-switch-label" for="prematureToggle">
+                    <input type="checkbox" id="prematureToggle">
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-text">Check Pre-closure Payout</span>
+                </label>
+            </div>
+
+            <div id="prematureBody" class="premature-content hidden">
+                <div class="premature-grid">
+                    <div class="premature-controls">
+                        <div class="label-row">
+                            <label for="prematureSlider">Break RD After</label>
+                            <span class="premature-val-badge" id="prematureMonthsText">12 Months</span>
+                        </div>
+                        <input type="range" id="prematureSlider" min="3" max="59" step="1" value="12" class="custom-slider">
+                        <div class="slider-ticks" id="prematureTicks">
+                            <span>3 Months</span>
+                            <span id="prematureMidTick">30 Months</span>
+                            <span id="prematureMaxTick">59 Months</span>
+                        </div>
+                        <p class="premature-rule-note">
+                            📌 <strong>Banking Rule:</strong> Banks deduct <strong>1.00% interest penalty</strong> from the contracted interest rate for premature withdrawal.
+                        </p>
+                    </div>
+
+                    <div class="premature-results">
+                        <div class="premature-stat-row">
+                            <span class="p-label">Principal Deposited Till Then:</span>
+                            <span class="p-value" id="pDeposited">₹60,000</span>
+                        </div>
+                        <div class="premature-stat-row">
+                            <span class="p-label">Penalty Rate Applied:</span>
+                            <span class="p-value" id="pRateApplied">6.10% (1% penalty)</span>
+                        </div>
+                        <div class="premature-stat-row">
+                            <span class="p-label">Interest Earned (After Penalty):</span>
+                            <span class="p-value color-interest" id="pInterest">₹2,010</span>
+                        </div>
+                        <div class="premature-payout-box">
+                            <span class="p-payout-label">Actual In-Hand Payout:</span>
+                            <span class="p-payout-amount" id="pPayout">₹62,010</span>
+                            <span class="p-loss-tag" id="pLossTag">Loss vs Full Maturity: ₹2,98,934</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Schedule / Breakdown Table Section -->
         <section class="card schedule-card">
             <div class="schedule-header">
                 <div>
-                    <h2 class="section-title">Year-wise Growth Schedule</h2>
+                    <h2 class="section-title-inline">Year-wise Growth Schedule</h2>
                     <p class="section-desc">Track your recurring savings and compounding interest over time</p>
                 </div>
-                <div class="schedule-view-toggle">
-                    <button type="button" class="tab-btn active" id="viewYearly">Yearly</button>
-                    <button type="button" class="tab-btn" id="viewMonthly">Monthly</button>
+                <div class="schedule-actions-row">
+                    <button type="button" class="btn btn-outline btn-compact" id="downloadCsvBtn">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download CSV
+                    </button>
+                    <div class="schedule-view-toggle">
+                        <button type="button" class="tab-btn active" id="viewYearly">Yearly</button>
+                        <button type="button" class="tab-btn" id="viewMonthly">Monthly</button>
+                    </div>
                 </div>
             </div>
 
@@ -276,7 +393,7 @@
 
         <!-- Information & FAQ Section -->
         <section class="card info-card">
-            <h2 class="section-title">Understanding Recurring Deposits (RD)</h2>
+            <h2 class="section-title-inline" style="margin-bottom: 20px;">Understanding Recurring Deposits (RD)</h2>
             <div class="faq-grid">
                 <div class="faq-item">
                     <h3>What is a Recurring Deposit?</h3>
@@ -294,8 +411,8 @@
                     </p>
                 </div>
                 <div class="faq-item">
-                    <h3>Benefits of an RD</h3>
-                    <p>RDs cultivate disciplined monthly savings habits, offer guaranteed fixed returns unaffected by market fluctuations, and allow loan/overdraft facilities against the accumulated balance.</p>
+                    <h3>Senior Citizen & Premature Rules</h3>
+                    <p>Indian banks provide <strong>+0.50% extra interest</strong> to Senior Citizens (age 60+). If an RD is pre-closed, banks deduct a <strong>1% interest penalty</strong> from the applicable tenure rate.</p>
                 </div>
             </div>
         </section>
@@ -303,7 +420,7 @@
         <!-- Footer -->
         <footer class="app-footer">
             <p>Built with ❤️ by <a href="https://github.com/rajshinde123" target="_blank" rel="noopener noreferrer">rajshinde123</a> • Public Open Source Project</p>
-            <p class="disclaimer">Calculations are for educational purposes. Final bank payouts may vary slightly due to exact day-count conventions.</p>
+            <p class="disclaimer">Calculations are for educational purposes based on RBI quarterly compounding guidelines. Exact bank values may vary by few rupees due to leap years.</p>
         </footer>
     </div>
 
