@@ -88,7 +88,7 @@
     let tenureUnit = 'years';      // 'years' or 'months'
     let scheduleView = 'yearly';   // 'yearly' or 'monthly'
     let activeBank = 'postoffice'; // 'postoffice', 'sbi', etc.
-    let baseRateWithoutSr = 7.10;
+    let baseRateWithoutSr = 6.70;
     let latestCalculation = null;
 
     // Currency Formatters
@@ -847,8 +847,8 @@ Calculated with RD Calculator by rajshinde123`;
             else c.classList.remove('active');
         });
 
-        interestRateInput.value = 7.10;
-        interestRateSlider.value = 7.10;
+        interestRateInput.value = 6.70;
+        interestRateSlider.value = 6.70;
         compoundingSelect.value = '4';
 
         setTenureUnit('years');

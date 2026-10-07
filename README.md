@@ -22,7 +22,7 @@ Try the application live in your browser:
   - **Standard RD:** Enter monthly deposit ➔ calculates expected maturity amount.
   - **Target Goal RD (Reverse RD):** Enter target goal (e.g. ₹1,00,000) ➔ calculates exact required monthly deposit.
 - **Senior Citizen Booster (+0.50%):** Toggle for individuals aged 60+ to automatically apply preferential interest rates and display extra wealth gained.
-- **Real Indian Bank Presets:** 1-Click rates for **Post Office (7.10%)**, **SBI (6.80%)**, **HDFC (7.00%)**, **ICICI (7.00%)**, and **PNB (6.85%)**.
+- **Real Indian Bank Presets:** 1-Click rates for **Post Office (6.70%)**, **SBI (6.80%)**, **HDFC (7.00%)**, **ICICI (7.00%)**, and **PNB (6.85%)**.
 - **Premature Break / Pre-Closure Penalty Calculator:** Real-world banking calculation estimating in-hand payout, 1% interest penalty deduction, and financial loss if RD is closed before maturity.
 - **Standard Quarterly Compounding:** Adheres strictly to RBI & Post Office norms (with options for monthly, half-yearly, annually, and simple interest).
 - **Dual Controls:** Synchronized range sliders and number inputs for smooth adjustments.
