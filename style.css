@@ -276,8 +276,9 @@ body {
 .section-desc {
     font-size: 0.85rem;
     color: var(--text-secondary);
-    margin-top: -14px;
-    margin-bottom: 16px;
+    margin-top: 4px;
+    margin-bottom: 14px;
+    line-height: 1.45;
 }
 
 .text-btn {
@@ -755,6 +756,9 @@ input[type=number] {
     flex-wrap: wrap;
     gap: 12px;
 }
+.schedule-header .section-desc {
+    margin: 2px 0 0 0;
+}
 
 .schedule-view-toggle {
     display: flex;
@@ -923,6 +927,8 @@ input[type=number] {
     font-size: 1.15rem;
     font-weight: 700;
     color: var(--text-primary);
+    margin: 0 0 2px 0;
+    line-height: 1.35;
 }
 
 .mode-switcher-container {
@@ -1096,8 +1102,15 @@ input[type=number] {
 }
 .premature-title-group {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.premature-title-group .section-desc {
+    margin: 2px 0 0 0;
 }
 .premature-badge {
+    align-self: flex-start;
     display: inline-block;
     font-size: 0.7rem;
     font-weight: 800;
@@ -1107,7 +1120,7 @@ input[type=number] {
     color: #d97706;
     padding: 2px 8px;
     border-radius: var(--radius-full);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 .premature-content {
     margin-top: 18px;
