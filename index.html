@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD Calculator - Recurring Deposit Calculator</title>
+    <meta name="description" content="Calculate maturity value, total investment, and interest earned on your Recurring Deposit (RD) with standard quarterly compounding.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body data-theme="light">
+    <!-- Background Gradient Glows -->
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="brand-title">RD Calculator</h1>
+                    <p class="brand-subtitle">Recurring Deposit Maturity & Interest Calculator</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="themeToggle" class="icon-btn" aria-label="Toggle Theme" title="Toggle Light/Dark Theme">
+                    <svg id="themeIconSun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg id="themeIconMoon" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <a href="https://github.com/rajshinde123/rd-calculator" target="_blank" rel="noopener noreferrer" class="icon-btn" aria-label="GitHub Repository" title="GitHub Repository">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                    </svg>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Calculator Layout -->
+        <main class="calculator-grid">
+            <!-- Left: Inputs Section -->
+            <section class="card input-card">
+                <h2 class="section-title">
+                    <span>Investment Details</span>
+                    <button id="resetBtn" class="text-btn" title="Reset all inputs">Reset</button>
+                </h2>
+
+                <!-- Input 1: Monthly Deposit -->
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="monthlyDepositInput">Monthly Deposit</label>
+                        <div class="input-badge">
+                            <span class="currency-symbol">₹</span>
+                            <input type="number" id="monthlyDepositInput" min="500" max="1000000" step="500" value="5000">
+                        </div>
+                    </div>
+                    <input type="range" id="monthlyDepositSlider" min="500" max="100000" step="500" value="5000" class="custom-slider">
+                    <div class="slider-ticks">
+                        <span>₹500</span>
+                        <span>₹25,000</span>
+                        <span>₹50,000</span>
+                        <span>₹1,00,000</span>
+                    </div>
+                    <!-- Quick Preset Chips -->
+                    <div class="preset-chips">
+                        <button type="button" class="chip" data-deposit="2000">+₹2,000</button>
+                        <button type="button" class="chip active" data-deposit="5000">+₹5,000</button>
+                        <button type="button" class="chip" data-deposit="10000">+₹10,000</button>
+                        <button type="button" class="chip" data-deposit="25000">+₹25,000</button>
+                    </div>
+                </div>
+
+                <!-- Input 2: Rate of Interest -->
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="interestRateInput">Interest Rate (p.a.)</label>
+                        <div class="input-badge">
+                            <input type="number" id="interestRateInput" min="1" max="15" step="0.1" value="7.1">
+                            <span class="unit-symbol">%</span>
+                        </div>
+                    </div>
+                    <input type="range" id="interestRateSlider" min="1" max="15" step="0.1" value="7.1" class="custom-slider">
+                    <div class="slider-ticks">
+                        <span>1%</span>
+                        <span>5%</span>
+                        <span>10%</span>
+                        <span>15%</span>
+                    </div>
+                    <!-- Quick Rate Chips -->
+                    <div class="preset-chips">
+                        <button type="button" class="chip" data-rate="6.5">6.5%</button>
+                        <button type="button" class="chip" data-rate="7.0">7.0%</button>
+                        <button type="button" class="chip active" data-rate="7.1">7.1% (Post Office)</button>
+                        <button type="button" class="chip" data-rate="7.5">7.5% (Sr. Citizen)</button>
+                    </div>
+                </div>
+
+                <!-- Input 3: Time Period / Tenure -->
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="tenureInput">Time Period</label>
+                        <div class="tenure-unit-toggle">
+                            <button type="button" class="unit-btn active" id="unitYears">Yr</button>
+                            <button type="button" class="unit-btn" id="unitMonths">Mo</button>
+                            <div class="input-badge compact">
+                                <input type="number" id="tenureInput" min="1" max="10" step="1" value="5">
+                                <span class="unit-symbol" id="tenureUnitLabel">Yr</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="range" id="tenureSlider" min="1" max="10" step="1" value="5" class="custom-slider">
+                    <div class="slider-ticks" id="tenureTicks">
+                        <span>1 Yr</span>
+                        <span>3 Yr</span>
+                        <span>5 Yr</span>
+                        <span>10 Yr</span>
+                    </div>
+                    <!-- Quick Tenure Chips -->
+                    <div class="preset-chips" id="tenureChips">
+                        <button type="button" class="chip" data-years="1">1 Year</button>
+                        <button type="button" class="chip" data-years="3">3 Years</button>
+                        <button type="button" class="chip active" data-years="5">5 Years</button>
+                        <button type="button" class="chip" data-years="10">10 Years</button>
+                    </div>
+                </div>
+
+                <!-- Input 4: Compounding Frequency -->
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="compoundingSelect">
+                            Compounding Frequency
+                            <span class="info-tooltip" title="Indian banks (SBI, HDFC, ICICI) and India Post compound RD interest on a quarterly basis.">ℹ</span>
+                        </label>
+                        <select id="compoundingSelect" class="custom-select">
+                            <option value="4" selected>Quarterly (Bank / Post Office)</option>
+                            <option value="12">Monthly</option>
+                            <option value="2">Half-Yearly</option>
+                            <option value="1">Annually</option>
+                            <option value="simple">Simple Interest</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right: Results & Analytics Section -->
+            <section class="card results-card">
+                <!-- Highlight Card -->
+                <div class="maturity-highlight-card">
+                    <div class="highlight-label">Expected Maturity Amount</div>
+                    <div class="highlight-value" id="maturityAmount">₹0</div>
+                    <div class="highlight-meta">
+                        <span id="maturityDate">Maturity Date: --</span>
+                        <span class="dot-separator">•</span>
+                        <span id="returnPercentage">Net Gain: 0%</span>
+                    </div>
+                </div>
+
+                <!-- Stats Breakdown Cards -->
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-indicator color-invested"></div>
+                        <div class="stat-content">
+                            <div class="stat-label">Total Investment</div>
+                            <div class="stat-val" id="totalInvested">₹0</div>
+                            <div class="stat-pct" id="investedPct">0% of total</div>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-indicator color-interest"></div>
+                        <div class="stat-content">
+                            <div class="stat-label">Total Interest Earned</div>
+                            <div class="stat-val" id="totalInterest">₹0</div>
+                            <div class="stat-pct" id="interestPct">0% of total</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Donut Chart -->
+                <div class="chart-container">
+                    <div class="chart-wrapper">
+                        <svg viewBox="0 0 200 200" class="donut-svg">
+                            <!-- Background Circle Track -->
+                            <circle cx="100" cy="100" r="75" class="donut-track"></circle>
+                            <!-- Invested Segment -->
+                            <circle id="donutInvested" cx="100" cy="100" r="75" class="donut-segment segment-invested"></circle>
+                            <!-- Interest Segment -->
+                            <circle id="donutInterest" cx="100" cy="100" r="75" class="donut-segment segment-interest"></circle>
+                        </svg>
+                        <div class="chart-center-content">
+                            <span class="chart-center-label">Tenure</span>
+                            <span class="chart-center-value" id="chartTenure">5 Yrs</span>
+                        </div>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot color-invested"></span>
+                            <span class="legend-text">Invested Amount</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot color-interest"></span>
+                            <span class="legend-text">Wealth Gained (Interest)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button id="printBtn" class="btn btn-outline">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <rect x="6" y="14" width="12" height="8"></rect>
+                        </svg>
+                        Print / Save PDF
+                    </button>
+                    <button id="copySummaryBtn" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy Summary
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Schedule / Breakdown Table Section -->
+        <section class="card schedule-card">
+            <div class="schedule-header">
+                <div>
+                    <h2 class="section-title">Year-wise Growth Schedule</h2>
+                    <p class="section-desc">Track your recurring savings and compounding interest over time</p>
+                </div>
+                <div class="schedule-view-toggle">
+                    <button type="button" class="tab-btn active" id="viewYearly">Yearly</button>
+                    <button type="button" class="tab-btn" id="viewMonthly">Monthly</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th id="thPeriod">Year</th>
+                            <th>Deposited This Period</th>
+                            <th>Total Invested</th>
+                            <th>Interest Earned</th>
+                            <th>Closing Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody">
+                        <!-- Populated dynamically by script.js -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Information & FAQ Section -->
+        <section class="card info-card">
+            <h2 class="section-title">Understanding Recurring Deposits (RD)</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>What is a Recurring Deposit?</h3>
+                    <p>A Recurring Deposit (RD) is an investment avenue offered by banks and the post office that lets you deposit a fixed sum of money every month for a pre-determined tenure at a fixed interest rate.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>How is RD Interest Calculated in India?</h3>
+                    <p>According to RBI guidelines, interest on recurring deposits is <strong>compounded quarterly</strong>. The earlier monthly deposits stay invested longer and earn compound interest over more quarters than deposits made towards the end of tenure.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Quarterly Compounding Formula</h3>
+                    <p class="formula-box">
+                        M = P &times; (1 + r/400)<sup>4n/12</sup><br>
+                        <small>Where <em>P</em> is monthly deposit, <em>r</em> is annual interest rate (%), and <em>n</em> is number of months remaining.</small>
+                    </p>
+                </div>
+                <div class="faq-item">
+                    <h3>Benefits of an RD</h3>
+                    <p>RDs cultivate disciplined monthly savings habits, offer guaranteed fixed returns unaffected by market fluctuations, and allow loan/overdraft facilities against the accumulated balance.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Built with ❤️ by <a href="https://github.com/rajshinde123" target="_blank" rel="noopener noreferrer">rajshinde123</a> • Public Open Source Project</p>
+            <p class="disclaimer">Calculations are for educational purposes. Final bank payouts may vary slightly due to exact day-count conventions.</p>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">Copied to clipboard!</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
