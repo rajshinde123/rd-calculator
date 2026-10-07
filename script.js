@@ -98,6 +98,36 @@
         maximumFractionDigits: 0
     });
 
+    // Smooth Number Count-Up Animation
+    const previousValues = new WeakMap();
+
+    function animateNumberValue(el, targetVal, suffix = '', duration = 300) {
+        if (!el) return;
+        const startVal = previousValues.has(el) ? previousValues.get(el) : targetVal;
+        previousValues.set(el, targetVal);
+
+        if (startVal === targetVal) {
+            el.textContent = inrFormatter.format(targetVal) + suffix;
+            return;
+        }
+
+        const startTime = performance.now();
+        function tick(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+            const current = Math.round(startVal + (targetVal - startVal) * ease);
+            el.textContent = inrFormatter.format(current) + suffix;
+
+            if (progress < 1) {
+                requestAnimationFrame(tick);
+            } else {
+                el.textContent = inrFormatter.format(targetVal) + suffix;
+            }
+        }
+        requestAnimationFrame(tick);
+    }
+
     /**
      * Theme Handler
      */
@@ -497,15 +527,20 @@
         if (currentMode === 'standard') {
             monthlyP = rawAmount;
             result = computeRD(monthlyP, rate, totalMonths, frequency);
-            highlightMainValue.textContent = inrFormatter.format(result.maturityAmount);
+            animateNumberValue(highlightMainValue, result.maturityAmount, '');
         } else {
             // Target Goal Mode
             const targetGoal = rawAmount;
             const goalResult = computeReverseRD(targetGoal, rate, totalMonths, frequency);
             monthlyP = goalResult.requiredMonthly;
             result = goalResult;
-            highlightMainValue.textContent = inrFormatter.format(goalResult.requiredMonthly) + ' / mo';
+            animateNumberValue(highlightMainValue, goalResult.requiredMonthly, ' / mo');
         }
+
+        // Trigger micro-pulse on highlight number
+        highlightMainValue.classList.remove('number-pulse');
+        void highlightMainValue.offsetWidth;
+        highlightMainValue.classList.add('number-pulse');
 
         latestCalculation = {
             monthlyP,
@@ -515,9 +550,9 @@
             result
         };
 
-        // Render Stats
-        totalInvestedEl.textContent = inrFormatter.format(result.totalInvested);
-        totalInterestEl.textContent = inrFormatter.format(result.totalInterest);
+        // Render Stats with smooth count-up animation
+        animateNumberValue(totalInvestedEl, result.totalInvested);
+        animateNumberValue(totalInterestEl, result.totalInterest);
 
         const investedPct = result.maturityAmount > 0 ? ((result.totalInvested / result.maturityAmount) * 100).toFixed(1) : 0;
         const interestPct = result.maturityAmount > 0 ? ((result.totalInterest / result.maturityAmount) * 100).toFixed(1) : 0;
@@ -547,10 +582,20 @@
         const options = { month: 'short', year: 'numeric' };
         maturityDateEl.textContent = `Maturity: ${maturityDate.toLocaleDateString('en-IN', options)}`;
 
-        // Center chart text
-        chartTenureEl.textContent = tenureUnit === 'years' 
+        // Center chart text with pop animation
+        const newTenureText = tenureUnit === 'years' 
             ? `${tenureRaw} ${tenureRaw === 1 ? 'Year' : 'Years'}` 
             : `${totalMonths} Months`;
+        
+        if (chartTenureEl.textContent !== newTenureText) {
+            chartTenureEl.textContent = newTenureText;
+            const chartCenter = document.querySelector('.chart-center-content');
+            if (chartCenter) {
+                chartCenter.classList.remove('pop');
+                void chartCenter.offsetWidth;
+                chartCenter.classList.add('pop');
+            }
+        }
 
         // Donut Chart
         updateDonutChart(result.totalInvested, result.totalInterest, result.maturityAmount);
