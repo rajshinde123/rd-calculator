@@ -2,8 +2,17 @@
 
 An interactive, responsive, and lightweight **Recurring Deposit (RD) Calculator** built with modern HTML5, CSS3, and Vanilla JavaScript. Accurately calculates maturity value, total investment, and compound interest using the standard **quarterly compounding formula** adopted by Indian banks (SBI, HDFC, ICICI, etc.) and India Post Office.
 
-![GitHub repo size](https://img.shields.io/github/repo-size/rajshinde123/rd-calculator)
-![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)
+[![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-success.svg)](https://rajshinde123.github.io/rd-calculator/)
+
+---
+
+## 🚀 Live Demo
+
+Try the application live in your browser:  
+🔗 **[https://rajshinde123.github.io/rd-calculator/](https://rajshinde123.github.io/rd-calculator/)**
 
 ---
 
@@ -38,22 +47,24 @@ Where:
 
 ---
 
-## 🚀 Live Demo
-
-Once GitHub Pages is enabled:
-🔗 **[https://rajshinde123.github.io/rd-calculator/](https://rajshinde123.github.io/rd-calculator/)**
-
----
-
 ## 📁 Project Structure
 
 ```
 rd-calculator/
-├── index.html       # Semantic HTML5 layout and structure
-├── style.css        # CSS variables, responsive design, dark/light theme & print styles
-├── script.js        # Core math calculations, SVG chart renderer, event handlers
-├── README.md        # Documentation
-└── .gitignore       # Git ignore file
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.md
+│   │   └── feature_request.md
+│   └── PULL_REQUEST_TEMPLATE.md
+├── index.html            # Semantic HTML5 layout and structure
+├── style.css             # CSS variables, responsive design, dark/light theme & print styles
+├── script.js             # Core math calculations, SVG chart renderer, event handlers
+├── CONTRIBUTING.md       # Contribution guidelines for open-source community
+├── CODE_OF_CONDUCT.md    # Contributor Covenant Code of Conduct
+├── SECURITY.md           # Security disclosure policy
+├── LICENSE               # MIT License
+├── README.md             # Project documentation
+└── .gitignore            # Git ignore configuration
 ```
 
 ---
@@ -72,7 +83,21 @@ rd-calculator/
 
 ---
 
-## 👤 Author
+## 🤝 Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**!
+
+Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting a pull request.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 👤 Author & Maintainer
 
 **Raj Shinde**  
 - GitHub: [@rajshinde123](https://github.com/rajshinde123)
@@ -81,4 +106,4 @@ rd-calculator/
 
 ## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more information.
